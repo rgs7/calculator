@@ -38,6 +38,7 @@ const operatorButtons = document.querySelectorAll("[data-operator]");
 const decimalButton = document.querySelector("[data-decimal]");
 const equalsButton = document.querySelector("#equals");
 const clearButton = document.querySelector("#clear");
+const backspaceButton = document.querySelector("#backspace");
 
 let currentValue = "0";
 let firstValue = null;
@@ -123,6 +124,39 @@ function calculateResult() {
     updateDisplay(currentValue);
 }
 
+function backspaceInput() {
+    if (display.textContent === "Error") {
+        clearCalculator();
+        return;
+    }
+
+    if (waitingForSecondValue && currentOperator) {
+        currentOperator = null;
+        waitingForSecondValue = false;
+        updateDisplay(currentValue);
+        return;
+    }
+
+    if (waitingForSecondValue) {
+        waitingForSecondValue = false;
+    }
+
+    if (currentValue.length <= 1) {
+        currentValue = "0";
+    } else {
+        currentValue = currentValue.slice(0, -1);
+        if (currentValue === "-" || currentValue === "") {
+            currentValue = "0";
+        }
+    }
+
+    if (firstValue !== null && currentOperator === null) {
+        firstValue = Number(currentValue);
+    }
+
+    updateDisplay(currentValue);
+}
+
 digitButtons.forEach((button) => {
     button.addEventListener("click", () => {
         inputDigit(button.dataset.digit);
@@ -138,5 +172,6 @@ operatorButtons.forEach((button) => {
 decimalButton.addEventListener("click", inputDecimal);
 equalsButton.addEventListener("click", calculateResult);
 clearButton.addEventListener("click", clearCalculator);
+backspaceButton.addEventListener("click", backspaceInput);
 
 updateDisplay(currentValue);

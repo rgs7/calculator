@@ -82,3 +82,7 @@ button:active {
     background: #9f4156;
     grid-column: span 2;
 }
+
+.backspace {
+    background: #5d5f78;
+}
