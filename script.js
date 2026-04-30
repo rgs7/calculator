@@ -11,29 +11,114 @@ function multiply(a, b) {
 }
 
 function divide(a, b) {
+    if (b === 0) {
+        return "Error";
+    }
     return a / b;
 }
-
-let number1;
-let number2;
-let operator;
 
 function operate(operator, num1, num2) {
     switch (operator) {
         case "+":
             return add(num1, num2);
-            break;
         case "-":
             return subtract(num1, num2);
-            break;
         case "*":
             return multiply(num1, num2);
-            break;
         case "/":
             return divide(num1, num2);
-            break;
         default:
-            console.log("Invalid operator");
-            break;
+            return "Error";
     }
 }
+
+const display = document.querySelector("#display");
+const digitButtons = document.querySelectorAll("[data-digit]");
+const operatorButtons = document.querySelectorAll("[data-operator]");
+const equalsButton = document.querySelector("#equals");
+const clearButton = document.querySelector("#clear");
+
+let currentValue = "0";
+let firstValue = null;
+let currentOperator = null;
+let waitingForSecondValue = false;
+
+function updateDisplay(value) {
+    display.textContent = String(value).slice(0, 12);
+}
+
+function clearCalculator() {
+    currentValue = "0";
+    firstValue = null;
+    currentOperator = null;
+    waitingForSecondValue = false;
+    updateDisplay(currentValue);
+}
+
+function inputDigit(digit) {
+    if (waitingForSecondValue) {
+        currentValue = digit;
+        waitingForSecondValue = false;
+    } else {
+        currentValue = currentValue === "0" ? digit : currentValue + digit;
+    }
+    updateDisplay(currentValue);
+}
+
+function inputOperator(nextOperator) {
+    const inputValue = Number(currentValue);
+
+    if (firstValue === null) {
+        firstValue = inputValue;
+    } else if (currentOperator && !waitingForSecondValue) {
+        const result = operate(currentOperator, firstValue, inputValue);
+        if (result === "Error") {
+            clearCalculator();
+            updateDisplay("Error");
+            return;
+        }
+        firstValue = result;
+        currentValue = String(result);
+        updateDisplay(currentValue);
+    }
+
+    currentOperator = nextOperator;
+    waitingForSecondValue = true;
+}
+
+function calculateResult() {
+    if (currentOperator === null || waitingForSecondValue) {
+        return;
+    }
+
+    const secondValue = Number(currentValue);
+    const result = operate(currentOperator, firstValue, secondValue);
+    if (result === "Error") {
+        clearCalculator();
+        updateDisplay("Error");
+        return;
+    }
+
+    currentValue = String(result);
+    firstValue = result;
+    currentOperator = null;
+    waitingForSecondValue = true;
+    updateDisplay(currentValue);
+}
+
+digitButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+        inputDigit(button.dataset.digit);
+    });
+});
+
+operatorButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+        inputOperator(button.dataset.operator);
+    });
+});
+
+equalsButton.addEventListener("click", calculateResult);
+clearButton.addEventListener("click", clearCalculator);
+
+updateDisplay(currentValue);
