@@ -35,6 +35,7 @@ function operate(operator, num1, num2) {
 const display = document.querySelector("#display");
 const digitButtons = document.querySelectorAll("[data-digit]");
 const operatorButtons = document.querySelectorAll("[data-operator]");
+const decimalButton = document.querySelector("[data-decimal]");
 const equalsButton = document.querySelector("#equals");
 const clearButton = document.querySelector("#clear");
 
@@ -62,6 +63,22 @@ function inputDigit(digit) {
     } else {
         currentValue = currentValue === "0" ? digit : currentValue + digit;
     }
+    updateDisplay(currentValue);
+}
+
+function inputDecimal() {
+    if (waitingForSecondValue) {
+        currentValue = "0.";
+        waitingForSecondValue = false;
+        updateDisplay(currentValue);
+        return;
+    }
+
+    if (currentValue.includes(".")) {
+        return;
+    }
+
+    currentValue += ".";
     updateDisplay(currentValue);
 }
 
@@ -118,6 +135,7 @@ operatorButtons.forEach((button) => {
     });
 });
 
+decimalButton.addEventListener("click", inputDecimal);
 equalsButton.addEventListener("click", calculateResult);
 clearButton.addEventListener("click", clearCalculator);
 
