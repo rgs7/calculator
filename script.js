@@ -174,4 +174,39 @@ equalsButton.addEventListener("click", calculateResult);
 clearButton.addEventListener("click", clearCalculator);
 backspaceButton.addEventListener("click", backspaceInput);
 
+document.addEventListener("keydown", (event) => {
+    const { key } = event;
+
+    if (/\d/.test(key)) {
+        inputDigit(key);
+        return;
+    }
+
+    if (["+", "-", "*", "/"].includes(key)) {
+        inputOperator(key);
+        return;
+    }
+
+    if (key === ".") {
+        inputDecimal();
+        return;
+    }
+
+    if (key === "Enter" || key === "=") {
+        event.preventDefault();
+        calculateResult();
+        return;
+    }
+
+    if (key === "Backspace") {
+        event.preventDefault();
+        backspaceInput();
+        return;
+    }
+
+    if (key === "Escape") {
+        clearCalculator();
+    }
+});
+
 updateDisplay(currentValue);
